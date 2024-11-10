@@ -4,5 +4,6 @@ using UnityEngine;
 
 public class PixelMap : ScriptableObject
 {
+    // List of Dictionaries which uses the {player}_normal.map Vector2's, and colors
     public List<Dictionary<Vector2, Color32>> colorData;
 }

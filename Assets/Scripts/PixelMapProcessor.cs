@@ -5,6 +5,8 @@ using UnityEngine.UIElements;
 
 public class PixelMapProcessor
 {
+    // This File has Functions on PixelMap.cs
+
     PixelMap pixelMap;
 
     public PixelMapProcessor(PixelMap pixelMap)
