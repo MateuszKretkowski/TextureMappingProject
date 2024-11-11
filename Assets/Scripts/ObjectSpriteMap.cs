@@ -9,10 +9,10 @@ using UnityEngine.UIElements;
 public class ObjectSpriteMap : ScriptableObject
 {
     public List<Vector2> keys = new List<Vector2>();
-    public List<Color32> values = new List<Color32>();
+    public List<Color> values = new List<Color>();
     private string filePath => Path.Combine(Application.persistentDataPath, "ObjectSpriteMap.json");
 
-    public void SetColor(Vector2 pos, Color32 color)
+    public void SetColor(Vector2 pos, Color color)
     {
         if (keys.Contains(pos))
         {
@@ -26,7 +26,7 @@ public class ObjectSpriteMap : ScriptableObject
         }
     }
 
-    public Color32? GetColor(Vector2 pos)
+    public Color? GetColor(Vector2 pos)
     {
         if (keys.Contains(pos))
         {

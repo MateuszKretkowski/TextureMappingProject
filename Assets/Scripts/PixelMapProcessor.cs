@@ -19,7 +19,7 @@ public class PixelMapProcessor
         return pixelMap.colorData[dictionaryIndex][pos];
     }
 
-    public void AddColorData(Vector2 pos, Color32 color, int dictionaryIndex)
+    public void AddColorData(Vector2 pos, Color color, int dictionaryIndex)
     {
         if (dictionaryIndex < 0 || dictionaryIndex >= pixelMap.colorData.Count)
         {
@@ -29,7 +29,7 @@ public class PixelMapProcessor
         pixelMap.colorData[dictionaryIndex][pos] = color;
     }
 
-    public void RemoveColorData(Vector2 pos, Color32 color, int dictionaryIndex)
+    public void RemoveColorData(Vector2 pos, Color color, int dictionaryIndex)
     {
         if (dictionaryIndex < 0 || dictionaryIndex >= pixelMap.colorData.Count)
         {
@@ -50,6 +50,6 @@ public class PixelMapProcessor
 
     public void AddDictionary()
     {
-        pixelMap.colorData.Add(new Dictionary<Vector2, Color32>());
+        pixelMap.colorData.Add(new Dictionary<Vector2, Color>());
     }
 }

@@ -54,11 +54,11 @@ public class ObjectSpriteProcessor : MonoBehaviour
                     float u = pixelPosition.x / sprite.texture.width;
                     float v = pixelPosition.y / sprite.texture.height;
 
-                    Color32 color = sprite.texture.GetPixelBilinear(u, v);
+                    Color color = sprite.texture.GetPixelBilinear(u, v);
 
                     if (color.a == 0)
                     {
-                        Color32? transparentColor = spriteMap.GetColor(pixelPosition);
+                        Color? transparentColor = spriteMap.GetColor(pixelPosition);
                         if (transparentColor != null)
                         {
                             spriteMap.SetColor(pixelPosition, color);
