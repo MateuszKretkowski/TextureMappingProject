@@ -9,12 +9,13 @@ public class ObjectSpriteProcessor : MonoBehaviour
     // The child of this Script object is the one who holds actual animator, and has the sprite renderer inside.
 
     [SerializeField] SpriteRenderer spriteRenderer;
+    [SerializeField] Animator animator;
     private ObjectSpriteMap spriteMap;
 
     void Start()
     {
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        GetSpriteBits();
+        animator = GetComponentInChildren<Animator>();
     }
 
     void Awake()
@@ -30,7 +31,7 @@ public class ObjectSpriteProcessor : MonoBehaviour
 
     void Update()
     {
-
+        GetSpriteBits();
     }
 
     public void GetSpriteBits()
@@ -54,14 +55,18 @@ public class ObjectSpriteProcessor : MonoBehaviour
                     float v = pixelPosition.y / sprite.texture.height;
 
                     Color32 color = sprite.texture.GetPixelBilinear(u, v);
+
                     if (color.a == 0)
                     {
-                        Debug.Log("returing");
+                        Color32? transparentColor = spriteMap.GetColor(pixelPosition);
+                        if (transparentColor != null)
+                        {
+                            spriteMap.SetColor(pixelPosition, color);
+                        }
                     }
                     else
                     {
-                        spriteMap.keys.Add(pixelPosition);
-                        spriteMap.values.Add(color);
+                        spriteMap.SetColor(pixelPosition, color);
                     }
                 }
             }

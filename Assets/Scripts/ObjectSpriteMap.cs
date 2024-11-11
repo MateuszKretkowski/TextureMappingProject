@@ -5,7 +5,7 @@ using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-[CreateAssetMenu(fileName = "SpriteMap", menuName = "Custom/pixel Dictionary")]
+[CreateAssetMenu(fileName = "ObjectSpriteMap", menuName = "Custom/pixel Dictionary")]
 public class ObjectSpriteMap : ScriptableObject
 {
     public List<Vector2> keys = new List<Vector2>();
