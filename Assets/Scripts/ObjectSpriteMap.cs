@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -8,7 +9,8 @@ using UnityEngine.UIElements;
 public class ObjectSpriteMap : ScriptableObject
 {
     public List<Vector2> keys = new List<Vector2>();
-    public List<Color> values = new List<Color>();
+    public List<Color32> values = new List<Color32>();
+    private string filePath => Path.Combine(Application.persistentDataPath, "ObjectSpriteMap.json");
 
     public void SetColor(Vector2 pos, Color32 color)
     {
@@ -32,5 +34,4 @@ public class ObjectSpriteMap : ScriptableObject
         }
         return null;
     }
-
 }
