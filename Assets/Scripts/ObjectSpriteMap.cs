@@ -34,4 +34,11 @@ public class ObjectSpriteMap : ScriptableObject
         }
         return null;
     }
+
+    public void Remove(Vector2 pos)
+    {
+        int index = keys.IndexOf(pos);
+            keys.RemoveAt(index);
+            values.RemoveAt(index);
+    }
 }

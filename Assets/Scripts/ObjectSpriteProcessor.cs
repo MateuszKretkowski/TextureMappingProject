@@ -29,9 +29,13 @@ public class ObjectSpriteProcessor : MonoBehaviour
         }
     }
 
-    void Update()
+    private void LateUpdate()
     {
         GetSpriteBits();
+    }
+    void Update()
+    {
+
     }
 
     public void GetSpriteBits()
@@ -45,24 +49,20 @@ public class ObjectSpriteProcessor : MonoBehaviour
 
         if (textureWidth > 0 && textureHeight > 0)
         {
-            for (int x=0; x<textureWidth; x++)
+            for (int x=0; x<=textureWidth; x++)
             {
-                for (int y=0; y<textureHeight; y++)
+                for (int y=0; y<=textureHeight; y++)
                 {
                     Vector2 pixelPosition = new Vector2(x, y);
 
                     float u = pixelPosition.x / sprite.texture.width;
                     float v = pixelPosition.y / sprite.texture.height;
 
-                    Color color = sprite.texture.GetPixelBilinear(u, v);
+                    Color color = sprite.texture.GetPixel(x, y);
 
-                    if (color.a == 0)
+                    if (color.a == 0 && spriteMap.GetColor(pixelPosition) != null)
                     {
-                        Color? transparentColor = spriteMap.GetColor(pixelPosition);
-                        if (transparentColor != null)
-                        {
-                            spriteMap.SetColor(pixelPosition, color);
-                        }
+                        spriteMap.Remove(pixelPosition);
                     }
                     else
                     {
@@ -70,6 +70,9 @@ public class ObjectSpriteProcessor : MonoBehaviour
                     }
                 }
             }
+            List<Vector2> vector2s = SpriteMapperScript.MapColorToVector2(spriteMap.values, "Player");
+            List<Color> mappedColors = SpriteMapperScript.MapVector2ToColor(vector2s, "Player");
+            SpriteMapperScript.ColorApplier(mappedColors, spriteMap.keys, sprite);
         }
     }
 }
