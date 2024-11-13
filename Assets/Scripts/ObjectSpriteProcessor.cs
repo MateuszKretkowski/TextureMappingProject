@@ -70,9 +70,6 @@ public class ObjectSpriteProcessor : MonoBehaviour
                     }
                 }
             }
-            List<Vector2> vector2s = SpriteMapperScript.MapColorToVector2(spriteMap.values, "Player");
-            List<Color> mappedColors = SpriteMapperScript.MapVector2ToColor(vector2s, "Player");
-            SpriteMapperScript.ColorApplier(mappedColors, spriteMap.keys, sprite);
         }
     }
 }
