@@ -24,41 +24,30 @@ public class FolderIterator : ScriptableObject
             }
 
             Dictionary<Vector2Int, Color32> spriteMap = new Dictionary<Vector2Int, Color32>();
+            int textureWidth = texture.width;
+            int textureHeight = texture.height;
 
-            // Use sprite.rect to get the correct width and height
-            int spriteWidth = Mathf.RoundToInt(sprite.rect.width);
-            int spriteHeight = Mathf.RoundToInt(sprite.rect.height);
+            Debug.Log($"Przetwarzanie tekstury: {sprite.name}, Rozmiar: {textureWidth}x{textureHeight}");
 
-            // Get the starting position within the texture
-            int xMin = Mathf.RoundToInt(sprite.rect.x);
-            int yMin = Mathf.RoundToInt(sprite.rect.y);
-
-            Debug.Log($"Przetwarzanie tekstury: {sprite.name}, Rozmiar: {spriteWidth}x{spriteHeight}");
-
-            if (spriteWidth > 0 && spriteHeight > 0)
+            if (textureWidth > 0 && textureHeight > 0)
             {
-                for (int x = 0; x < spriteWidth; x++)
+                for (int x = 0; x < textureWidth; x++)
                 {
-                    for (int y = 0; y < spriteHeight; y++)
+                    for (int y = 0; y < textureHeight; y++)
                     {
-                        // Adjust the texture coordinates based on the sprite's position in the texture
-                        int textureX = x + xMin;
-                        int textureY = y + yMin;
-
-                        Color32 color = texture.GetPixel(textureX, textureY);
+                        Vector2Int pixelPosition = new Vector2Int(x, y);
+                        Color32 color = texture.GetPixel(x, y);
 
                         if (color.a > 0) // Log only non-transparent pixels
                         {
-                            Vector2Int pixelPosition = new Vector2Int(x, y); // Position within the sprite
                             spriteMap.Add(pixelPosition, color);
-                            Debug.Log($"Pozycja pikseli: ({x}, {y}), Kolor: {color}");
+                            Debug.Log($"Pixel Position: ({x}, {y}), Color: {color}");
                         }
                     }
                 }
             }
             spritesMap.Add(spriteMap);
         }
-
 
         // Call the mapping method
         Debug.Log("All color and pixel position lists have been processed.");

@@ -5,6 +5,15 @@ public class SpriteMapperScript
 {
     public static void MapColorToVector2(List<Dictionary<Vector2Int, Color32>> spritesMap, string mapName, List<Sprite> pngTextures)
     {
+        List<List<Vector2Int>> positionsList = new List<List<Vector2Int>>();
+
+        foreach (Dictionary<Vector2Int, Color32> spriteMap in spritesMap)
+        {
+            // Collect the keys (Vector2Int positions) from each dictionary
+            List<Vector2Int> positions = new List<Vector2Int>(spriteMap.Keys);
+            positionsList.Add(positions);
+        }
+
         List<List<Vector2Int>> colorPositions = new List<List<Vector2Int>>();
         Sprite map = Resources.Load<Sprite>($"Maps/{mapName}.map");
 
@@ -35,10 +44,10 @@ public class SpriteMapperScript
             colorPositions.Add(vector2List);
         }
 
-        MapVector2ToColor(colorPositions, mapName, pngTextures);
+        MapVector2ToColor(colorPositions, mapName, pngTextures, positionsList);
     }
 
-    public static void MapVector2ToColor(List<List<Vector2Int>> positions, string mapName, List<Sprite> pngTextures)
+    public static void MapVector2ToColor(List<List<Vector2Int>> positions, string mapName, List<Sprite> pngTextures, List<List<Vector2Int>> originalPositions)
     {
         List<List<Color32>> colors = new List<List<Color32>>();
         Sprite normalMap = Resources.Load<Sprite>($"Maps/{mapName}_normal.map");
@@ -70,7 +79,7 @@ public class SpriteMapperScript
             colors.Add(textureColors);
         }
 
-        ColorApplier(colors, positions, pngTextures);
+        ColorApplier(colors, originalPositions, pngTextures);
     }
 
     public static void ColorApplier(List<List<Color32>> colors, List<List<Vector2Int>> positions, List<Sprite> objectSprite)
