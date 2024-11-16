@@ -11,8 +11,7 @@ public class FolderIterator : ScriptableObject
     public void GetSpriteBits()
     {
         isMappingTextures = true;
-        List<List<Color>> listOfTextureColors = new List<List<Color>>();
-        List<List<Vector2>> listOfTextureVectors = new List<List<Vector2>>();
+        List<Dictionary<Vector2Int, Color32>> spritesMap = new List<Dictionary<Vector2Int, Color32>>();
 
         foreach (Sprite sprite in pngTextures)
         {
@@ -24,37 +23,45 @@ public class FolderIterator : ScriptableObject
                 continue;
             }
 
-            List<Color> textureColorList = new List<Color>();
-            List<Vector2> textureVector2List = new List<Vector2>();
-            int textureWidth = texture.width;
-            int textureHeight = texture.height;
+            Dictionary<Vector2Int, Color32> spriteMap = new Dictionary<Vector2Int, Color32>();
 
-            Debug.Log($"Przetwarzanie tekstury: {sprite.name}, Rozmiar: {textureWidth}x{textureHeight}");
+            // Use sprite.rect to get the correct width and height
+            int spriteWidth = Mathf.RoundToInt(sprite.rect.width);
+            int spriteHeight = Mathf.RoundToInt(sprite.rect.height);
 
-            if (textureWidth > 0 && textureHeight > 0)
+            // Get the starting position within the texture
+            int xMin = Mathf.RoundToInt(sprite.rect.x);
+            int yMin = Mathf.RoundToInt(sprite.rect.y);
+
+            Debug.Log($"Przetwarzanie tekstury: {sprite.name}, Rozmiar: {spriteWidth}x{spriteHeight}");
+
+            if (spriteWidth > 0 && spriteHeight > 0)
             {
-                for (int x = 0; x < textureWidth; x++)
+                for (int x = 0; x < spriteWidth; x++)
                 {
-                    for (int y = 0; y < textureHeight; y++)
+                    for (int y = 0; y < spriteHeight; y++)
                     {
-                        Vector2 pixelPosition = new Vector2(x, y);
-                        Color color = texture.GetPixel(x, y);
+                        // Adjust the texture coordinates based on the sprite's position in the texture
+                        int textureX = x + xMin;
+                        int textureY = y + yMin;
 
-                        if (color.a != 0) // Logowanie tylko nieprzezroczystych pikseli
+                        Color32 color = texture.GetPixel(textureX, textureY);
+
+                        if (color.a > 0) // Log only non-transparent pixels
                         {
-                            textureColorList.Add(color);
-                            textureVector2List.Add(pixelPosition);
+                            Vector2Int pixelPosition = new Vector2Int(x, y); // Position within the sprite
+                            spriteMap.Add(pixelPosition, color);
                             Debug.Log($"Pozycja pikseli: ({x}, {y}), Kolor: {color}");
                         }
                     }
                 }
             }
-            listOfTextureColors.Add(textureColorList);
-            listOfTextureVectors.Add(textureVector2List);
+            spritesMap.Add(spriteMap);
         }
 
-        // Wywo³anie metody mapowania
-        Debug.Log("Ca³a lista kolorów i pozycji pikseli zosta³a przetworzona.");
-        SpriteMapperScript.MapColorToVector2(listOfTextureColors, "Player", listOfTextureVectors, pngTextures);
+
+        // Call the mapping method
+        Debug.Log("All color and pixel position lists have been processed.");
+        SpriteMapperScript.MapColorToVector2(spritesMap, "Player", pngTextures);
     }
 }

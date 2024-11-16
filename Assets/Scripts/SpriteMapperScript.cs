@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class SpriteMapperScript
 {
-    public static void MapColorToVector2(List<List<Color>> colors, string mapName, List<List<Vector2>> spriteVector2, List<Sprite> pngTextures)
+    public static void MapColorToVector2(List<Dictionary<Vector2Int, Color32>> spritesMap, string mapName, List<Sprite> pngTextures)
     {
-        List<List<Vector2>> colorPositions = new List<List<Vector2>>();
+        List<List<Vector2Int>> colorPositions = new List<List<Vector2Int>>();
         Sprite map = Resources.Load<Sprite>($"Maps/{mapName}.map");
 
         if (map == null || map.texture == null)
@@ -14,31 +14,33 @@ public class SpriteMapperScript
             return;
         }
 
-        foreach (List<Color> textureColors in colors)
+        foreach (Dictionary<Vector2Int, Color32> spriteMap in spritesMap)
         {
-            List<Vector2> positions = new List<Vector2>();
+            List<Vector2Int> vector2List = new List<Vector2Int>();
+            HashSet<Color32> colorsInSpriteMap = new HashSet<Color32>(spriteMap.Values);
+
             for (int x = 0; x < map.texture.width; x++)
             {
                 for (int y = 0; y < map.texture.height; y++)
                 {
-                    Vector2 pixelPosition = new Vector2(x, y);
-                    Color mappedColor = map.texture.GetPixel(x, y);
+                    Vector2Int pixelPosition = new Vector2Int(x, y);
+                    Color32 mappedColor = map.texture.GetPixel(x, y);
 
-                    if (textureColors.Contains(mappedColor) && mappedColor.a != 0)
+                    if (mappedColor.a > 0 && colorsInSpriteMap.Contains(mappedColor))
                     {
-                        positions.Add(pixelPosition);
+                        vector2List.Add(pixelPosition);
                     }
                 }
             }
-            colorPositions.Add(positions);
+            colorPositions.Add(vector2List);
         }
 
-        MapVector2ToColor(colorPositions, mapName, spriteVector2, pngTextures);
+        MapVector2ToColor(colorPositions, mapName, pngTextures);
     }
 
-    public static void MapVector2ToColor(List<List<Vector2>> positions, string mapName, List<List<Vector2>> spriteVector2, List<Sprite> pngTextures)
+    public static void MapVector2ToColor(List<List<Vector2Int>> positions, string mapName, List<Sprite> pngTextures)
     {
-        List<List<Color>> colors = new List<List<Color>>();
+        List<List<Color32>> colors = new List<List<Color32>>();
         Sprite normalMap = Resources.Load<Sprite>($"Maps/{mapName}_normal.map");
 
         if (normalMap == null || normalMap.texture == null)
@@ -47,17 +49,19 @@ public class SpriteMapperScript
             return;
         }
 
-        foreach (List<Vector2> texturePositions in positions)
+        foreach (List<Vector2Int> texturePositions in positions)
         {
-            List<Color> textureColors = new List<Color>();
+            List<Color32> textureColors = new List<Color32>();
+            HashSet<Vector2Int> positionsSet = new HashSet<Vector2Int>(texturePositions);
+
             for (int x = 0; x < normalMap.texture.width; x++)
             {
                 for (int y = 0; y < normalMap.texture.height; y++)
                 {
-                    Vector2 pixelPosition = new Vector2(x, y);
-                    Color mappedColor = normalMap.texture.GetPixel(x, y);
+                    Vector2Int pixelPosition = new Vector2Int(x, y);
+                    Color32 mappedColor = normalMap.texture.GetPixel(x, y);
 
-                    if (texturePositions.Contains(pixelPosition) && mappedColor.a != 0)
+                    if (positionsSet.Contains(pixelPosition) && mappedColor.a > 0)
                     {
                         textureColors.Add(mappedColor);
                     }
@@ -66,10 +70,10 @@ public class SpriteMapperScript
             colors.Add(textureColors);
         }
 
-        ColorApplier(colors, spriteVector2, pngTextures);
+        ColorApplier(colors, positions, pngTextures);
     }
 
-    public static void ColorApplier(List<List<Color>> colors, List<List<Vector2>> positions, List<Sprite> objectSprite)
+    public static void ColorApplier(List<List<Color32>> colors, List<List<Vector2Int>> positions, List<Sprite> objectSprite)
     {
         for (int h = 0; h < objectSprite.Count; h++)
         {
@@ -88,16 +92,15 @@ public class SpriteMapperScript
 
             for (int i = 0; i < positions[h].Count && i < colors[h].Count; i++)
             {
-                int x = Mathf.RoundToInt(positions[h][i].x);
-                int y = Mathf.RoundToInt(positions[h][i].y);
+                int x = positions[h][i].x;
+                int y = positions[h][i].y;
 
                 if (colors[h][i].a != 0)
                 {
                     texture.SetPixel(x, y, colors[h][i]);
-                    texture.Apply();
                 }
             }
-
+            texture.Apply();
         }
     }
 }
