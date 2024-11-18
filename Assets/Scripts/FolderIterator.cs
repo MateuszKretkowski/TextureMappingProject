@@ -51,6 +51,7 @@ public class FolderIterator : ScriptableObject
 
         // Call the mapping method
         Debug.Log("All color and pixel position lists have been processed.");
+        Debug.Log(spritesMap.Count);
         SpriteMapperScript.MapColorToVector2(spritesMap, "Player", pngTextures);
     }
 }

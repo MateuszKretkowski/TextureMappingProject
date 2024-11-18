@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SpriteMapperScript
@@ -12,6 +13,7 @@ public class SpriteMapperScript
             // Collect the keys (Vector2Int positions) from each dictionary
             List<Vector2Int> positions = new List<Vector2Int>(spriteMap.Keys);
             positionsList.Add(positions);
+            Debug.Log($"Collected positions: {string.Join(", ", positions)}");
         }
 
         List<List<Vector2Int>> colorPositions = new List<List<Vector2Int>>();
@@ -26,18 +28,21 @@ public class SpriteMapperScript
         foreach (Dictionary<Vector2Int, Color32> spriteMap in spritesMap)
         {
             List<Vector2Int> vector2List = new List<Vector2Int>();
-            HashSet<Color32> colorsInSpriteMap = new HashSet<Color32>(spriteMap.Values);
-
-            for (int x = 0; x < map.texture.width; x++)
+            List<Color32> colorsInSpriteMap = new List<Color32>();
+            foreach (var value in spriteMap.Values.ToList())
             {
-                for (int y = 0; y < map.texture.height; y++)
+                for (int x = 0; x < map.texture.width; x++)
                 {
-                    Vector2Int pixelPosition = new Vector2Int(x, y);
-                    Color32 mappedColor = map.texture.GetPixel(x, y);
-
-                    if (mappedColor.a > 0 && colorsInSpriteMap.Contains(mappedColor))
+                    for (int y = 0; y < map.texture.height; y++)
                     {
-                        vector2List.Add(pixelPosition);
+                        Vector2Int pixelPosition = new Vector2Int(x, y);
+                        Color32 mappedColor = map.texture.GetPixel(x, y);
+
+                        if (mappedColor.a > 0 && value.Equals(mappedColor)) // spriteMap
+                        {
+                            vector2List.Add(pixelPosition);
+                            Debug.LogFormat("Mapping color {0} at position {1}", mappedColor, pixelPosition);
+                        }
                     }
                 }
             }
@@ -61,20 +66,12 @@ public class SpriteMapperScript
         foreach (List<Vector2Int> texturePositions in positions)
         {
             List<Color32> textureColors = new List<Color32>();
-            HashSet<Vector2Int> positionsSet = new HashSet<Vector2Int>(texturePositions);
-
-            for (int x = 0; x < normalMap.texture.width; x++)
+            foreach (Vector2Int vector2Int in texturePositions)
             {
-                for (int y = 0; y < normalMap.texture.height; y++)
-                {
-                    Vector2Int pixelPosition = new Vector2Int(x, y);
-                    Color32 mappedColor = normalMap.texture.GetPixel(x, y);
-
-                    if (positionsSet.Contains(pixelPosition) && mappedColor.a > 0)
-                    {
-                        textureColors.Add(mappedColor);
-                    }
-                }
+                Vector2Int pixelPosition = new Vector2Int(vector2Int.x, vector2Int.y);
+                Color32 mappedColor = normalMap.texture.GetPixel(vector2Int.x, vector2Int.y);
+                textureColors.Add(mappedColor);
+                Debug.Log("Mapped Color: " + mappedColor + " at Position: " + pixelPosition);
             }
             colors.Add(textureColors);
         }
@@ -99,17 +96,19 @@ public class SpriteMapperScript
                 return;
             }
 
-            for (int i = 0; i < positions[h].Count && i < colors[h].Count; i++)
+            for (int i = 0; i < positions[h].Count; i++)
             {
                 int x = positions[h][i].x;
                 int y = positions[h][i].y;
 
                 if (colors[h][i].a != 0)
                 {
+                    Debug.LogFormat("Applying color {0} at position ({1}, {2}) on texture {3}", colors[h][i], x, y, objectSprite[h].name);
                     texture.SetPixel(x, y, colors[h][i]);
                 }
             }
             texture.Apply();
+            Debug.LogFormat("Texture {0} updated and applied.", objectSprite[h].name);
         }
     }
 }
