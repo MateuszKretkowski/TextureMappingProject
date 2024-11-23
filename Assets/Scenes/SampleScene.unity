@@ -169,6 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 0}
   animator: {fileID: 0}
+  folderIterator: {fileID: 11400000, guid: 48359682cfb6ca7489fe0fc0423571a3, type: 2}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

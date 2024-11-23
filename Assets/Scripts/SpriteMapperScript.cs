@@ -1,76 +1,133 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.U2D;
-using UnityEngine.UIElements;
 
 public class SpriteMapperScript
 {
-    public List<Vector2> MapColorToVector2(List<Color> colors, string mapName)
+    public static void MapColorToVector2(List<List<Vector2Int>> spritesVector2, List<List<Color32>> spritesColor, string mapName, List<Sprite> pngTextures)
     {
-        List<Vector2> colorPositions = new List<Vector2>();
-        Sprite map = Resources.Load<Sprite>($"Maps/{mapName}_normal.map");
+        List<List<Vector2Int>> colorPositions = new List<List<Vector2Int>>();
+        Sprite map = Resources.Load<Sprite>($"Maps/{mapName}.map");
 
-        for (int x=0; x< map.texture.width; x++)
+        if (map == null || map.texture == null)
         {
-            for (int y=0; y< map.texture.height; y++)
-            {
-                Vector2 pixelPosition = new Vector2(x, y);
-
-                float u = pixelPosition.x / map.texture.width;
-                float v = pixelPosition.y / map.texture.height;
-
-                Color mappedColor = map.texture.GetPixelBilinear(u, v);
-
-                if (colors.Contains(mappedColor))
-                {
-                    Debug.Log("we have a matched color!");
-                    colorPositions.Add(pixelPosition); 
-                }
-            }
+            Debug.LogError("Map nie zosta³a znaleziona lub tekstura jest niedostêpna.");
+            return;
         }
-        return colorPositions;
-    }
-    // list color32
-    public List<Color> MapVector2ToColor(List<Vector2> positions, string mapName)
-    {
-        List<Color> colors = new List<Color>();
-        Sprite normalMap = Resources.Load<Sprite>($"Maps/{mapName}.map");
 
-        for (int x=0; x<normalMap.texture.width; x++)
+        foreach (List<Color32> spriteColor in spritesColor)
         {
-            for (int y=0; y<normalMap.texture.height; y++)
+            List<Vector2Int> vector2List = new List<Vector2Int>();
+            List<Color32> colorsInSpriteMap = new List<Color32>();
+            foreach (Color32 value in spriteColor)
             {
-                Vector2 pixelPosition = new Vector2(x, y);
-
-                float u = pixelPosition.x / normalMap.texture.width;
-                float v = pixelPosition.y / normalMap.texture.height;
-
-                Color mappedColor = normalMap.texture.GetPixelBilinear(u, v);
-
-                if (positions.Contains(pixelPosition))
+                bool isFound = new bool();
+                isFound = false;
+                for (int x = 0; x <= map.texture.width; x++)
                 {
-                    if (mappedColor.a != 0)
+                    for (int y = 0; y <= map.texture.height; y++)
                     {
-                        Debug.LogError("there is a bug with MapColor32ToVector2 void");
+                        Vector2Int pixelPosition = new Vector2Int(x, y);
+                        Color32 mappedColor = map.texture.GetPixel(x, y);
+                        if (value.Equals(mappedColor))
+                        {
+                            isFound = true;
+                        }
+                        if (mappedColor.a > 0 && value.Equals(mappedColor)) // spriteMap
+                        {
+                            vector2List.Add(pixelPosition);
+                            isFound = true;
+                            Debug.LogFormat("Mapping color {0} at position {1}, with this pixelPosition {2}", mappedColor, pixelPosition, value);
+                        }
                     }
-                    Debug.Log("We Have Succesfully Mapped a color");
-                    colors.Add(mappedColor);
+                }
+                if (!isFound)
+                {
+                    Debug.LogError("COLOR ISNT FOUND");
                 }
             }
+            colorPositions.Add(vector2List);
         }
-        return colors;
+        if (colorPositions.Count != spritesVector2.Count)
+        {
+            Debug.LogError("ZLE COS JESTTTTY");
+        }
+        for (int i = 0; i < colorPositions.Count && i < spritesVector2.Count; i++)
+        {
+            if (colorPositions[i].Count == spritesVector2[i].Count)
+            {
+                Debug.Log("git");
+            }
+            else
+            {
+                Debug.LogError("colorPositions.Count isnt the same as spritesVector2.Count");
+                Debug.Log(colorPositions.Count);
+                Debug.Log(colorPositions[i].Count);
+                Debug.Log(spritesVector2.Count);
+                Debug.Log(spritesVector2[i].Count);
+            }
+        }
+                MapVector2ToColor(colorPositions, mapName, pngTextures, spritesVector2);
     }
 
-    public void ColorApplier(List<Color> colors, List<Vector2> positions, Sprite objectSprite)
+    public static void MapVector2ToColor(List<List<Vector2Int>> positions, string mapName, List<Sprite> pngTextures, List<List<Vector2Int>> originalPositions)
     {
-        for (int i=0; i<positions.Count; i++)
+        List<List<Color32>> colors = new List<List<Color32>>();
+        Sprite normalMap = Resources.Load<Sprite>($"Maps/{mapName}_normal.map");
+
+        if (normalMap == null || normalMap.texture == null)
         {
-            int x = Mathf.RoundToInt(positions[i].x);
-            int y = Mathf.RoundToInt(positions[i].y);
-            objectSprite.texture.SetPixel(x, y, colors[i]);
+            Debug.LogError("Normal map nie zosta³a znaleziona lub tekstura jest niedostêpna.");
+            return;
         }
-        objectSprite.texture.Apply();
+
+        foreach (List<Vector2Int> texturePositions in positions)
+        {
+            List<Color32> textureColors = new List<Color32>();
+            foreach (Vector2Int vector2Int in texturePositions)
+            {
+                Vector2Int pixelPosition = new Vector2Int(vector2Int.x, vector2Int.y);
+                Color32 mappedColor = normalMap.texture.GetPixel(vector2Int.x, vector2Int.y);
+                textureColors.Add(mappedColor);
+                Debug.Log("Mapped Color: " + mappedColor + " at Position: " + pixelPosition);
+            }
+            colors.Add(textureColors);
+        }
+
+        ColorApplier(colors, originalPositions, pngTextures);
+    }
+
+    public static void ColorApplier(List<List<Color32>> colors, List<List<Vector2Int>> positions, List<Sprite> objectSprite)
+    {
+        for (int h = 0; h < objectSprite.Count; h++)
+        {
+            if (h >= colors.Count || h >= positions.Count)
+            {
+                Debug.LogWarning("Nie znaleziono odpowiedniej liczby kolorów lub pozycji dla tekstury.");
+                continue;
+            }
+
+            Texture2D texture = objectSprite[h].texture;
+            if (!texture.isReadable)
+            {
+                Debug.LogError("Tekstura musi byæ ustawiona jako Read/Write enabled w ustawieniach importu.");
+                return;
+            }
+
+            for (int i = 0; i < positions[h].Count; i++)
+            {
+                int x = positions[h][i].x;
+                int y = positions[h][i].y;
+
+                if (colors[h][i].a != 0)
+                {
+                    Debug.LogFormat("Applying color {0} at position ({1}, {2}) on texture {3}", colors[h][i], x, y, objectSprite[h].name);
+                    texture.SetPixel(x, y, colors[h][i]);
+                }
+            }
+            texture.Apply();
+            Debug.LogFormat("Texture {0} updated and applied.", objectSprite[h].name);
+        }
     }
 }

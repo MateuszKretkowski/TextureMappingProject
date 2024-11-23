@@ -12,10 +12,21 @@ public class ObjectSpriteProcessor : MonoBehaviour
     [SerializeField] Animator animator;
     private ObjectSpriteMap spriteMap;
 
+    public FolderIterator folderIterator;
+
     void Start()
     {
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         animator = GetComponentInChildren<Animator>();
+
+        if (folderIterator != null && folderIterator.pngTextures != null)
+        {
+            folderIterator.GetSpriteBits();
+        }
+        else
+        {
+            Debug.LogError("Brak przypisanego FolderIterator lub tekstur do przetworzenia.");
+        }
     }
 
     void Awake()
@@ -26,50 +37,6 @@ public class ObjectSpriteProcessor : MonoBehaviour
         {
             Debug.LogError("ObjectSpriteMap asset not found in Resources folder.");
             return;
-        }
-    }
-
-    void Update()
-    {
-        GetSpriteBits();
-    }
-
-    public void GetSpriteBits()
-    {
-        Sprite sprite = spriteRenderer.sprite;
-
-        int textureWidth = sprite.texture.width;
-        int textureHeight = sprite.texture.height;
-
-        Debug.Log(textureHeight + textureWidth);
-
-        if (textureWidth > 0 && textureHeight > 0)
-        {
-            for (int x=0; x<textureWidth; x++)
-            {
-                for (int y=0; y<textureHeight; y++)
-                {
-                    Vector2 pixelPosition = new Vector2(x, y);
-
-                    float u = pixelPosition.x / sprite.texture.width;
-                    float v = pixelPosition.y / sprite.texture.height;
-
-                    Color color = sprite.texture.GetPixelBilinear(u, v);
-
-                    if (color.a == 0)
-                    {
-                        Color? transparentColor = spriteMap.GetColor(pixelPosition);
-                        if (transparentColor != null)
-                        {
-                            spriteMap.SetColor(pixelPosition, color);
-                        }
-                    }
-                    else
-                    {
-                        spriteMap.SetColor(pixelPosition, color);
-                    }
-                }
-            }
         }
     }
 }
