@@ -1,21 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class SpriteMapperScript
 {
-    public static void MapColorToVector2(List<Dictionary<Vector2Int, Color32>> spritesMap, string mapName, List<Sprite> pngTextures)
+    public static void MapColorToVector2(List<List<Vector2Int>> spritesVector2, List<List<Color32>> spritesColor, string mapName, List<Sprite> pngTextures)
     {
-        List<List<Vector2Int>> positionsList = new List<List<Vector2Int>>();
-
-        foreach (Dictionary<Vector2Int, Color32> spriteMap in spritesMap)
-        {
-            // Collect the keys (Vector2Int positions) from each dictionary
-            List<Vector2Int> positions = new List<Vector2Int>(spriteMap.Keys);
-            positionsList.Add(positions);
-            Debug.Log($"Collected positions: {string.Join(", ", positions)}");
-        }
-
         List<List<Vector2Int>> colorPositions = new List<List<Vector2Int>>();
         Sprite map = Resources.Load<Sprite>($"Maps/{mapName}.map");
 
@@ -25,31 +16,59 @@ public class SpriteMapperScript
             return;
         }
 
-        foreach (Dictionary<Vector2Int, Color32> spriteMap in spritesMap)
+        foreach (List<Color32> spriteColor in spritesColor)
         {
             List<Vector2Int> vector2List = new List<Vector2Int>();
             List<Color32> colorsInSpriteMap = new List<Color32>();
-            foreach (var value in spriteMap.Values.ToList())
+            foreach (Color32 value in spriteColor)
             {
-                for (int x = 0; x < map.texture.width; x++)
+                bool isFound = new bool();
+                isFound = false;
+                for (int x = 0; x <= map.texture.width; x++)
                 {
-                    for (int y = 0; y < map.texture.height; y++)
+                    for (int y = 0; y <= map.texture.height; y++)
                     {
                         Vector2Int pixelPosition = new Vector2Int(x, y);
                         Color32 mappedColor = map.texture.GetPixel(x, y);
-
+                        if (value.Equals(mappedColor))
+                        {
+                            isFound = true;
+                        }
                         if (mappedColor.a > 0 && value.Equals(mappedColor)) // spriteMap
                         {
                             vector2List.Add(pixelPosition);
-                            Debug.LogFormat("Mapping color {0} at position {1}", mappedColor, pixelPosition);
+                            isFound = true;
+                            Debug.LogFormat("Mapping color {0} at position {1}, with this pixelPosition {2}", mappedColor, pixelPosition, value);
                         }
                     }
+                }
+                if (!isFound)
+                {
+                    Debug.LogError("COLOR ISNT FOUND");
                 }
             }
             colorPositions.Add(vector2List);
         }
-
-        MapVector2ToColor(colorPositions, mapName, pngTextures, positionsList);
+        if (colorPositions.Count != spritesVector2.Count)
+        {
+            Debug.LogError("ZLE COS JESTTTTY");
+        }
+        for (int i = 0; i < colorPositions.Count && i < spritesVector2.Count; i++)
+        {
+            if (colorPositions[i].Count == spritesVector2[i].Count)
+            {
+                Debug.Log("git");
+            }
+            else
+            {
+                Debug.LogError("colorPositions.Count isnt the same as spritesVector2.Count");
+                Debug.Log(colorPositions.Count);
+                Debug.Log(colorPositions[i].Count);
+                Debug.Log(spritesVector2.Count);
+                Debug.Log(spritesVector2[i].Count);
+            }
+        }
+                MapVector2ToColor(colorPositions, mapName, pngTextures, spritesVector2);
     }
 
     public static void MapVector2ToColor(List<List<Vector2Int>> positions, string mapName, List<Sprite> pngTextures, List<List<Vector2Int>> originalPositions)

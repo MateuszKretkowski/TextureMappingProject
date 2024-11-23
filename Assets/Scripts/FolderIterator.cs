@@ -11,7 +11,8 @@ public class FolderIterator : ScriptableObject
     public void GetSpriteBits()
     {
         isMappingTextures = true;
-        List<Dictionary<Vector2Int, Color32>> spritesMap = new List<Dictionary<Vector2Int, Color32>>();
+        List<List<Vector2Int>> spritesVector2 = new List<List<Vector2Int>>();
+        List<List<Color32>> spritesColor = new List<List<Color32>>();
 
         foreach (Sprite sprite in pngTextures)
         {
@@ -23,7 +24,8 @@ public class FolderIterator : ScriptableObject
                 continue;
             }
 
-            Dictionary<Vector2Int, Color32> spriteMap = new Dictionary<Vector2Int, Color32>();
+            List<Vector2Int> spriteVector2 = new List<Vector2Int>();
+            List<Color32> spriteColor = new List<Color32>();
             int textureWidth = texture.width;
             int textureHeight = texture.height;
 
@@ -31,27 +33,28 @@ public class FolderIterator : ScriptableObject
 
             if (textureWidth > 0 && textureHeight > 0)
             {
-                for (int x = 0; x < textureWidth; x++)
+                for (int x = 0; x <= textureWidth; x++)
                 {
-                    for (int y = 0; y < textureHeight; y++)
+                    for (int y = 0; y <= textureHeight; y++)
                     {
                         Vector2Int pixelPosition = new Vector2Int(x, y);
                         Color32 color = texture.GetPixel(x, y);
 
                         if (color.a > 0) // Log only non-transparent pixels
                         {
-                            spriteMap.Add(pixelPosition, color);
+                            spriteVector2.Add(pixelPosition);
+                            spriteColor.Add(color);
                             Debug.Log($"Pixel Position: ({x}, {y}), Color: {color}");
                         }
                     }
                 }
             }
-            spritesMap.Add(spriteMap);
+            spritesVector2.Add(spriteVector2);
+            spritesColor.Add(spriteColor);
         }
 
         // Call the mapping method
         Debug.Log("All color and pixel position lists have been processed.");
-        Debug.Log(spritesMap.Count);
-        SpriteMapperScript.MapColorToVector2(spritesMap, "Player", pngTextures);
+        SpriteMapperScript.MapColorToVector2(spritesVector2, spritesColor, "Player", pngTextures);
     }
 }
