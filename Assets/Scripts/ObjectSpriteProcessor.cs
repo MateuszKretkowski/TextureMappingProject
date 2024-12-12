@@ -10,8 +10,6 @@ public class ObjectSpriteProcessor : MonoBehaviour
 
     [SerializeField] SpriteRenderer spriteRenderer;
     [SerializeField] Animator animator;
-    private ObjectSpriteMap spriteMap;
-
     public FolderIterator folderIterator;
 
     void Start()
@@ -26,17 +24,6 @@ public class ObjectSpriteProcessor : MonoBehaviour
         else
         {
             Debug.LogError("Brak przypisanego FolderIterator lub tekstur do przetworzenia.");
-        }
-    }
-
-    void Awake()
-    {
-        spriteMap = Resources.Load<ObjectSpriteMap>("ObjectSpriteMap");
-
-        if (spriteMap == null)
-        {
-            Debug.LogError("ObjectSpriteMap asset not found in Resources folder.");
-            return;
         }
     }
 }

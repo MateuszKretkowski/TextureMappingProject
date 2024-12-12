@@ -34,7 +34,7 @@ public class SpriteMapperScript
                         {
                             isFound = true;
                         }
-                        if (mappedColor.a > 0 && value.Equals(mappedColor)) // spriteMap
+                        if (mappedColor.a > 0 && value.Equals(mappedColor))
                         {
                             vector2List.Add(pixelPosition);
                             isFound = true;
