@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b49c41b5cc04e744b15b222b8e90a6c, type: 3}
   m_Name: FolderIterator
   m_EditorClassIdentifier: 
-  isMappingTextures: 0
+  isMappingTextures: 1
   pngTextures:
   - {fileID: 21300000, guid: bdb15f34ca408c34d88c20f3b1297b9b, type: 3}
   - {fileID: 21300000, guid: 01945f24d73bd874da279974f71f7f3e, type: 3}

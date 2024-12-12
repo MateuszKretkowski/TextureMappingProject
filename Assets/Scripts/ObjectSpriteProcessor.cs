@@ -12,8 +12,14 @@ public class ObjectSpriteProcessor : MonoBehaviour
     [SerializeField] Animator animator;
     public FolderIterator folderIterator;
 
+    public Sprite head_front_dark_example;
+
+    float timer;
+    public float timeMax;
+
     void Start()
     {
+        timer = timeMax;
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         animator = GetComponentInChildren<Animator>();
 
@@ -24,6 +30,15 @@ public class ObjectSpriteProcessor : MonoBehaviour
         else
         {
             Debug.LogError("Brak przypisanego FolderIterator lub tekstur do przetworzenia.");
+        }
+    }
+    public bool canChange;
+    private void FixedUpdate()
+    {
+        if (canChange)
+        {
+            folderIterator.ChangeMapPart("Player", 0, 4, 16, 16, head_front_dark_example);
+            canChange = false;
         }
     }
 }

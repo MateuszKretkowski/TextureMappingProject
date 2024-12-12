@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "FolderIterator", menuName = "Custom/Create Folder with Textures")]
@@ -7,7 +9,33 @@ public class FolderIterator : ScriptableObject
     public bool isMappingTextures;
     public List<Sprite> pngTextures;
 
-    [ContextMenu("Launch TextureMapping")]
+    public void ChangeMapPart(string mapName, int nthX, int nthY, int blockSizeX, int blockSizeY, Sprite mapPart)
+    {
+        Sprite map = Resources.Load<Sprite>($"Maps/{mapName}_normal.map");
+
+        if (map == null || map.texture == null)
+        {
+            Debug.LogError("Map nie zosta³a znaleziona lub tekstura jest niedostêpna.");
+            return;
+        }
+
+        Texture2D mapPartTexture = mapPart.texture;
+
+        for (int i = 0; i <= mapPartTexture.width; i++)
+        {
+            for (int j = 0; j <= mapPartTexture.height; j++)
+            {
+                Color color = mapPartTexture.GetPixel(i, j);
+                if (color.a > 0)
+                {
+                    map.texture.SetPixel(i + (nthX * blockSizeX), j + (nthY * blockSizeY), color);
+                }
+            }
+        }
+        map.texture.Apply();
+        GetSpriteBits();
+    }
+
     public void GetSpriteBits()
     {
         isMappingTextures = true;

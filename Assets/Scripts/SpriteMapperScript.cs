@@ -105,7 +105,7 @@ public class SpriteMapperScript
             if (h >= colors.Count || h >= positions.Count)
             {
                 Debug.LogWarning("Nie znaleziono odpowiedniej liczby kolorów lub pozycji dla tekstury.");
-                continue;
+                return;
             }
 
             Texture2D texture = objectSprite[h].texture;
