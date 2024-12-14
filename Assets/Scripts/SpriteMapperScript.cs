@@ -24,9 +24,9 @@ public class SpriteMapperScript
             {
                 bool isFound = new bool();
                 isFound = false;
-                for (int x = 0; x <= map.texture.width; x++)
+                for (int x = 0; x < map.texture.width; x++)
                 {
-                    for (int y = 0; y <= map.texture.height; y++)
+                    for (int y = 0; y < map.texture.height; y++)
                     {
                         Vector2Int pixelPosition = new Vector2Int(x, y);
                         Color32 mappedColor = map.texture.GetPixel(x, y);

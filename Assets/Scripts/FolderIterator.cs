@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "FolderIterator", menuName = "Custom/Create Folder with Textures")]
@@ -19,6 +20,12 @@ public class FolderIterator : ScriptableObject
             return;
         }
 
+        foreach (Sprite sprite in pngTextures)
+        {
+            string assetPath = AssetDatabase.GetAssetPath(sprite.texture);
+            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+        }
+
         Texture2D mapPartTexture = mapPart.texture;
 
         for (int i = 0; i <= mapPartTexture.width; i++)
@@ -35,6 +42,7 @@ public class FolderIterator : ScriptableObject
         map.texture.Apply();
         GetSpriteBits();
     }
+
 
     public void GetSpriteBits()
     {
@@ -61,9 +69,9 @@ public class FolderIterator : ScriptableObject
 
             if (textureWidth > 0 && textureHeight > 0)
             {
-                for (int x = 0; x <= textureWidth; x++)
+                for (int x = 0; x < textureWidth; x++)
                 {
-                    for (int y = 0; y <= textureHeight; y++)
+                    for (int y = 0; y < textureHeight; y++)
                     {
                         Vector2Int pixelPosition = new Vector2Int(x, y);
                         Color32 color = texture.GetPixel(x, y);
