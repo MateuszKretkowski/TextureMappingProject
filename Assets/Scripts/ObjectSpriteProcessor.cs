@@ -10,12 +10,16 @@ public class ObjectSpriteProcessor : MonoBehaviour
 
     [SerializeField] SpriteRenderer spriteRenderer;
     [SerializeField] Animator animator;
-    private ObjectSpriteMap spriteMap;
-
     public FolderIterator folderIterator;
+
+    public Sprite head_front_dark_example;
+
+    float timer;
+    public float timeMax;
 
     void Start()
     {
+        timer = timeMax;
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         animator = GetComponentInChildren<Animator>();
 
@@ -28,15 +32,13 @@ public class ObjectSpriteProcessor : MonoBehaviour
             Debug.LogError("Brak przypisanego FolderIterator lub tekstur do przetworzenia.");
         }
     }
-
-    void Awake()
+    public bool canChange;
+    void FixedUpdate()
     {
-        spriteMap = Resources.Load<ObjectSpriteMap>("ObjectSpriteMap");
-
-        if (spriteMap == null)
+        if (canChange)
         {
-            Debug.LogError("ObjectSpriteMap asset not found in Resources folder.");
-            return;
+            folderIterator.ChangeMapPart("Player", 0, 4, 16, 16, head_front_dark_example);
+            canChange = false;
         }
     }
 }
