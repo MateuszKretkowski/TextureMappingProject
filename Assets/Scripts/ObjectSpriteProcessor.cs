@@ -33,7 +33,7 @@ public class ObjectSpriteProcessor : MonoBehaviour
         }
     }
     public bool canChange;
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         if (canChange)
         {
